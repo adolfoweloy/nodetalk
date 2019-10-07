@@ -1,0 +1,15 @@
+<% include ../header %>
+<header class="row-fluid text-center">
+  <h1>Nodetalk</h1>
+  <h4>Welcome!</h4>
+</header>
+<section class="row-fluid text-center">
+  <form action="/login" method="post">
+    <input type="text" name="user[name]" placeholder="Type your name.">
+    <br>
+    <input type="text" name="user[email]" placeholder="Type your e-mail.">
+    <br>
+    <button type="submit" class="btn btn-success">Login</button>
+  </form>
+</section>
+<% include ../footer %>
