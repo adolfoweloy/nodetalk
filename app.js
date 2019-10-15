@@ -3,6 +3,7 @@ var express = require('express'),
   bodyParser = require('body-parser'),
   cookieParser = require('cookie-parser'),
   expressSession = require('express-session'),
+  methodOverride = require('method-override'),
   app = express();
 
 // app attributes
@@ -14,6 +15,7 @@ app.use(cookieParser('nodetalk'));
 app.use(expressSession());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
 
 // not needed after using express-load
