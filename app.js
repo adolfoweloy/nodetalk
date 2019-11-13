@@ -30,6 +30,8 @@ app.use(express.static(__dirname + '/public'));
 
 // the following directories have to be loaded in the following order
 // since routes depends on controllers which depends on models.
+
+// what load does that I can't load middleware?
 load('models')
   .then('controllers')
   .then('routes')
