@@ -6,6 +6,11 @@ var express = require('express'),
   methodOverride = require('method-override'),
   app = express();
 
+/**
+ * modules being used:
+ * load: was used because of the book but the recommended package to use is consign.
+ *       it allows to load scripts into Express by specifying directories.
+ */
 // app attributes
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -23,8 +28,8 @@ app.use(express.static(__dirname + '/public'));
 // app.use('/', routes);
 // app.use('/users', users);
 
-// organise the loading method to avoid confusion and loading modules multiple time
-// needs to be loaded in the correct order (arff)
+// the following directories have to be loaded in the following order
+// since routes depends on controllers which depends on models.
 load('models')
   .then('controllers')
   .then('routes')
