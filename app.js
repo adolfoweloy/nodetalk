@@ -4,6 +4,7 @@ var express = require('express'),
   cookieParser = require('cookie-parser'),
   expressSession = require('express-session'),
   methodOverride = require('method-override'),
+  error = require('./middlewares/errors'),
   app = express();
 
 /**
@@ -36,6 +37,9 @@ load('models')
   .then('controllers')
   .then('routes')
   .into(app);
+
+app.use(error.notFound);
+app.use(error.serverError);
 
 // the same way I used to do with http module
 app.listen(3000, function() {

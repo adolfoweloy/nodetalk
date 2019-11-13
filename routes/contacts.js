@@ -1,4 +1,4 @@
-const authorization = require('./../middleware/auth');
+const authorization = require('../middlewares/auth');
 
 module.exports = function(app) {
     let contacts = app.controllers.contacts;
