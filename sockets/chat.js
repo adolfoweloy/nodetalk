@@ -1,14 +1,33 @@
 module.exports = function(io) {
-    const currentChat = [];
+    const currentChat = [],
+          crypto = require('crypto');
+
     io.sockets.on('connection', function(client) {
         let session = client.handshake.session,
             user = session.user;
 
-        client.on('send-server', function(data) {
-            let msg = '<b>' + user.name + ':</b> ' + data + '<br>';
+        client.on('join', function(channel) {
+            if (!channel) {
+                let timestamp = new Date().toString(),
+                    md5 = crypto.createHash('md5');
+                channel = md5.update(timestamp).digest('hex');
+            }
+            session.channel = channel;
+            client.join(channel);
+        });
+
+        client.on('disconnect', function() {
+            client.leave(session.channel);
+        });
+
+        client.on('send-server', function(messageContent) {
+            let channel = session.channel,
+                data = { email: user.email, channel: channel },
+                msg = '<b>' + user.name + ':</b> ' + messageContent + '<br>';
+
             currentChat.push(msg);
-            client.emit('send-client', msg);
-            client.broadcast.emit('send-client', msg);
+            client.in(channel).emit('send-client', msg);
+            client.broadcast.emit('new-message', data);
         });
 
         client.on('request-initial', function() {

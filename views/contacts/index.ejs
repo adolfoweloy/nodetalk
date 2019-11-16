@@ -27,12 +27,13 @@
                     <td><%- contact.email %></td>
                     <td>
                         <a href="/contacts/<%- index%>">Details</a>
-                        <a href="/chat">Chat</a>
+                        <a href="/chat" id="chat_<%- contact.email %>">Chat</a>
                     </td>
                 </tr>
             <% }) %>
         </tbody>
     </table>
 </section>
+<% include notify_scripts %>
 <% include ../exit %>
 <% include ../footer %>
