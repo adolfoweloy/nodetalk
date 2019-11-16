@@ -1,10 +1,25 @@
 module.exports = function(io) {
-    const currentChat = [],
-          crypto = require('crypto');
+    const crypto = require('crypto'),
+          sockets = io.sockets,
+          currentChat = [],
+          onlines = {} // such a terrible workaround :(
+          ;
 
-    io.sockets.on('connection', function(client) {
+    // I don't know where to put this yet (shouldn't be here)
+    Array.prototype.del = function(item) { 
+        return this.slice(0, this.indexOf(item)).concat(this.slice(this.indexOf(item)+1));
+    };
+
+    sockets.on('connection', function(client) {
         let session = client.handshake.session,
             user = session.user;
+
+        // notify onlines
+        onlines[user.email] = user;
+        for (var email in onlines) {
+            client.emit('notify-onlines', email);
+            client.broadcast.emit('notify-onlines', email);
+        }
 
         client.on('join', function(channel) {
             if (!channel) {
@@ -17,6 +32,9 @@ module.exports = function(io) {
         });
 
         client.on('disconnect', function() {
+            client.emit('notify-offlines', user.email);
+            client.broadcast.emit('notify-offlines', user.email);
+            delete onlines[user.email];
             client.leave(session.channel);
         });
 

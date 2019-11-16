@@ -17,6 +17,7 @@
             <tr>
                 <th>Name</th>
                 <th>E-mail</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -25,6 +26,7 @@
                 <tr>
                     <td><%- contact.name %></td>
                     <td><%- contact.email %></td>
+                    <td id="notify_<%- contact.email %>">Offline</td>
                     <td>
                         <a href="/contacts/<%- index%>">Details</a>
                         <a href="/chat" id="chat_<%- contact.email %>">Chat</a>

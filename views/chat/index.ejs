@@ -13,6 +13,10 @@
     socket.on('send-initial', function(initialContent) {
         document.getElementById('chat').innerHTML = initialContent;
     });
+    socket.on('notify-offlines', function(data) {
+        let msg = `<b>${data}</b> left the channel.`;
+        document.getElementById('chat').innerHTML += msg;
+    });
 
     let send = function () {
         let msg = document.getElementById('msg');
