@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 // all the functions declared within the controller are called actions
 module.exports = function(app) {
     let HomeController = {
@@ -8,6 +10,11 @@ module.exports = function(app) {
             let user = req.body.user;
             let name = user.name,
                 email = user.email;
+
+            user.key = crypto
+                    .createHash('md5')
+                    .update(name)
+                    .digest('hex');
 
             if (email && name) {
                 user['contacts'] = [];

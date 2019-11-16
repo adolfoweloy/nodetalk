@@ -1,0 +1,33 @@
+<% include ../header %>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    let socket = io('http://localhost:3000');
+    socket.on('send-client', function (msg) {
+        document.getElementById('chat').innerHTML += msg;
+    });
+    socket.on('send-initial', function(initialContent) {
+        document.getElementById('chat').innerHTML = initialContent;
+    });
+
+    let send = function () {
+        let msg = document.getElementById('msg');
+        socket.emit('send-server', msg.value);
+        msg.value = '';
+        msg.focus();
+    };
+
+    // initialises the chat with previous conversations
+    let loadInitial = function() {
+        socket.emit('request-initial');
+    }();
+</script>
+<header>
+    <h2>Nodetalk - Chat</h2>
+</header>
+<section>
+    <pre id="chat"></pre>
+    <input type="text" id="msg" placeholder="Message">
+    <button onclick="send();">Send</button>
+</section>
+<% include ../exit %>
+<% include ../footer %>

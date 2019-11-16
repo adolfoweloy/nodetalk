@@ -1,49 +1,65 @@
-var express = require('express'),
-  load = require('express-load'),
-  bodyParser = require('body-parser'),
-  cookieParser = require('cookie-parser'),
-  expressSession = require('express-session'),
-  methodOverride = require('method-override'),
-  error = require('./middlewares/errors'),
-  app = express();
+// constants used to share session between http and socket.io
+const KEY = "nodetalk.sid",
+  SECRET = "nodetalk";
 
-/**
- * modules being used:
- * load: was used because of the book but the recommended package to use is consign.
- *       it allows to load scripts into Express by specifying directories.
- */
+var express = require("express"),
+  load = require("express-load"),
+  bodyParser = require("body-parser"),
+  cookieParser = require("cookie-parser"),
+  expressSession = require("express-session"),
+  methodOverride = require("method-override"),
+  error = require("./middlewares/errors"),
+  app = express(),
+  server = require("http").Server(app),
+  io = require("socket.io")(server),
+  cookie = cookieParser(SECRET),
+  store = new expressSession.MemoryStore();
+
 // app attributes
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
+app.set("views", __dirname + "/views");
+app.set("view engine", "ejs");
 
 // registering middlewares
-app.use(cookieParser('nodetalk'));
-app.use(expressSession());
+app.use(cookie);
+app.use(
+  expressSession({
+    secret: SECRET,
+    name: KEY,
+    resave: true,
+    saveUninitialized: true,
+    store: store
+  })
+);
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(methodOverride('_method'));
-app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
+app.use(express.static(__dirname + "/public"));
 
-// not needed after using express-load
-// in addition all the default routes were removed - home is the custom 
-// app.use('/', routes);
-// app.use('/users', users);
-
-// the following directories have to be loaded in the following order
-// since routes depends on controllers which depends on models.
+// session share/validation for socket.io
+io.use(function(socket, next) {
+  var data = socket.request;
+  cookie(data, {}, function(err) {
+    var sessionID = data.signedCookies[KEY];
+    store.get(sessionID, function(err, session) {
+      if (err || !session) {
+        return next(new Error("access denied"));
+      } else {
+        socket.handshake.session = session;
+        return next();
+      }
+    });
+  });
+});
 
 // what load does that I can't load middleware?
-load('models')
-  .then('controllers')
-  .then('routes')
-  .into(app);
+load("models").then("controllers").then("routes").into(app);
+
+load("sockets").into(io);
 
 app.use(error.notFound);
 app.use(error.serverError);
 
 // the same way I used to do with http module
-app.listen(3000, function() {
-  console.log('listening on port 3000');
+server.listen(3000, function() {
+  console.log("listening on port 3000");
 });
-
-module.exports = app;
