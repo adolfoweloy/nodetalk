@@ -5,11 +5,6 @@ module.exports = function(io) {
           onlines = {} // such a terrible workaround :(
           ;
 
-    // I don't know where to put this yet (shouldn't be here)
-    Array.prototype.del = function(item) { 
-        return this.slice(0, this.indexOf(item)).concat(this.slice(this.indexOf(item)+1));
-    };
-
     sockets.on('connection', function(client) {
         let session = client.handshake.session,
             user = session.user;
