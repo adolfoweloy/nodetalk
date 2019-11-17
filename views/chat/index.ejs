@@ -2,11 +2,20 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     let socket = io('http://localhost:3000');
+
+    // probably this channel comes from querystring
+    // this will be empty for the first time too (don't worry, chat.js is handling new channels)
+    socket.emit('join', '<%- channel %>'); 
+
     socket.on('send-client', function (msg) {
         document.getElementById('chat').innerHTML += msg;
     });
     socket.on('send-initial', function(initialContent) {
         document.getElementById('chat').innerHTML = initialContent;
+    });
+    socket.on('notify-offlines', function(data) {
+        let msg = `<b>${data}</b> left the channel.`;
+        document.getElementById('chat').innerHTML += msg;
     });
 
     let send = function () {

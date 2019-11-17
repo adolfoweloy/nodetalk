@@ -1,7 +1,8 @@
 module.exports = function(app) {
     let ChatController = {
         index: function(req, res) {
-            res.render('chat/index');
+            let params = { channel: req.query.channel };
+            res.render('chat/index', params);
         }
     };
     return ChatController;
